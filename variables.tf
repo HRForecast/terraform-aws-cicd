@@ -22,8 +22,8 @@ variable "enabled" {
 }
 
 variable "manual_approve" {
-  type        = bool
-  default     = true
+  type        = number
+  default     = 0
   description = "Enable ``Manual Approval`` stage"
 }
 
