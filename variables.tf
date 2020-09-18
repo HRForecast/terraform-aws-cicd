@@ -15,6 +15,12 @@ variable "name" {
   description = "Solution name, e.g. 'app' or 'jenkins'"
 }
 
+variable "enabled" {
+  type        = bool
+  default     = true
+  description = "Enable ``CodePipeline`` creation"
+}
+
 variable "manual_approve" {
   type        = bool
   default     = true
