@@ -193,28 +193,6 @@ resource "aws_iam_role_policy_attachment" "codebuild_s3" {
 
 # 1. GitHub -> ECR (Docker image)
 
-
-  approval {
-    name = "Approval"
-
-    action {
-      name             = "Source"
-      category         = "Approval"
-      owner            = "ThirdParty"
-      provider         = "Manual"
-      version          = "1"
-
-      configuration = {
-        OAuthToken           = var.github_oauth_token
-        Owner                = var.repo_owner
-        Repo                 = var.repo_name
-        Branch               = var.branch
-        PollForSourceChanges = var.poll_source_changes
-      }
-    }
-  }
-
-
 resource "aws_codepipeline" "manualapprove" {
   count    = var.manual_approve
 
@@ -243,6 +221,22 @@ resource "aws_codepipeline" "manualapprove" {
         Repo                 = var.repo_name
         Branch               = var.branch
         PollForSourceChanges = var.poll_source_changes
+      }
+    }
+  }
+
+  stage {
+    name = "Approval"
+
+    action {
+      name             = "Source"
+      category         = "Approval"
+      owner            = "ThirdParty"
+      provider         = "Manual"
+      version          = "1"
+
+      configuration = {
+        CustomData           = "Review this for production."
       }
     }
   }
