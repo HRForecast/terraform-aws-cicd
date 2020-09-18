@@ -270,7 +270,7 @@ Available targets:
 | delimiter | Delimiter to be used between `name`, `namespace`, `stage`, etc. | `string` | `"-"` | no |
 | elastic\_beanstalk\_application\_name | Elastic Beanstalk application name. If not provided or set to empty string, the `Deploy` stage of the pipeline will not be created | `string` | `""` | no |
 | elastic\_beanstalk\_environment\_name | Elastic Beanstalk environment name. If not provided or set to empty string, the `Deploy` stage of the pipeline will not be created | `string` | `""` | no |
-| enabled | Enable `CodePipeline` creation | `bool` | `true` | no |
+| enabled | Enable `Manual Approval` stage | `bool` | `true` | no |
 | environment\_variables | A list of maps, that contain both the key 'name' and the key 'value' to be used as additional environment variables for the build | <pre>list(object(<br>    {<br>      name  = string<br>      value = string<br>  }))</pre> | <pre>[<br>  {<br>    "name": "NO_ADDITIONAL_BUILD_VARS",<br>    "value": "TRUE"<br>  }<br>]</pre> | no |
 | force\_destroy | Force destroy the CI/CD S3 bucket even if it's not empty | `bool` | `false` | no |
 | github\_oauth\_token | GitHub Oauth Token | `string` | n/a | yes |

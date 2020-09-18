@@ -15,10 +15,10 @@ variable "name" {
   description = "Solution name, e.g. 'app' or 'jenkins'"
 }
 
-variable "enabled" {
+variable "manual_approve" {
   type        = bool
   default     = true
-  description = "Enable ``CodePipeline`` creation"
+  description = "Enable ``Manual Approval`` stage"
 }
 
 variable "elastic_beanstalk_application_name" {

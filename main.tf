@@ -193,9 +193,104 @@ resource "aws_iam_role_policy_attachment" "codebuild_s3" {
 
 # 1. GitHub -> ECR (Docker image)
 
-resource "aws_codepipeline" "default" {
+
+  approval {
+    name = "Approval"
+
+    action {
+      name             = "Source"
+      category         = "Approval"
+      owner            = "ThirdParty"
+      provider         = "Manual"
+      version          = "1"
+
+      configuration = {
+        OAuthToken           = var.github_oauth_token
+        Owner                = var.repo_owner
+        Repo                 = var.repo_name
+        Branch               = var.branch
+        PollForSourceChanges = var.poll_source_changes
+      }
+    }
+  }
+
+
+resource "aws_codepipeline" "manualapprove" {
+  count    = var.manual_approve
+
+  name     = module.label.id
+  role_arn = join("", aws_iam_role.default.*.arn)
+
+  artifact_store {
+    location = join("", aws_s3_bucket.default.*.bucket)
+    type     = "S3"
+  }
+
+  stage {
+    name = "Source"
+
+    action {
+      name             = "Source"
+      category         = "Source"
+      owner            = "ThirdParty"
+      provider         = "GitHub"
+      version          = "1"
+      output_artifacts = ["code"]
+
+      configuration = {
+        OAuthToken           = var.github_oauth_token
+        Owner                = var.repo_owner
+        Repo                 = var.repo_name
+        Branch               = var.branch
+        PollForSourceChanges = var.poll_source_changes
+      }
+    }
+  }
+
+  stage {
+    name = "Build"
+
+    action {
+      name     = "Build"
+      category = "Build"
+      owner    = "AWS"
+      provider = "CodeBuild"
+      version  = "1"
+
+      input_artifacts  = ["code"]
+      output_artifacts = ["package"]
+
+      configuration = {
+        ProjectName = module.codebuild.project_name
+      }
+    }
+  }
+
+  dynamic "stage" {
+    for_each = var.elastic_beanstalk_application_name != "" && var.elastic_beanstalk_environment_name != "" ? ["true"] : []
+    content {
+      name = "Deploy"
+
+      action {
+        name            = "Deploy"
+        category        = "Deploy"
+        owner           = "AWS"
+        provider        = "ElasticBeanstalk"
+        input_artifacts = ["package"]
+        version         = "1"
+
+        configuration = {
+          ApplicationName = var.elastic_beanstalk_application_name
+          EnvironmentName = var.elastic_beanstalk_environment_name
+        }
+      }
+    }
+  }
+}
+
+resource "aws_codepipeline" "automatic" {
   # Elastic Beanstalk application name and environment name are specified
-  count    = var.enabled ? 1 : 0
+  count    = 1-var.manual_approve
   name     = module.label.id
   role_arn = join("", aws_iam_role.default.*.arn)
 
