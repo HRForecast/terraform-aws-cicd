@@ -226,17 +226,17 @@ resource "aws_codepipeline" "manualapprove" {
   }
 
   stage {
-    name = "Approval"
+    name = "Approve"
 
     action {
-      name             = "Source"
+      name             = "Approval"
       category         = "Approval"
       owner            = "ThirdParty"
       provider         = "Manual"
       version          = "1"
 
       configuration = {
-        CustomData           = "Review this for production."
+        CustomData     = "Review this for production."
       }
     }
   }
