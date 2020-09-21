@@ -231,7 +231,7 @@ resource "aws_codepipeline" "manualapprove" {
     action {
       name             = "Approval"
       category         = "Approval"
-      owner            = "ThirdParty"
+      owner            = "AWS"
       provider         = "Manual"
       version          = "1"
 
